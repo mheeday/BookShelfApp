@@ -13,6 +13,7 @@ urlpatterns = [
     path('logout/', user_views.logout, name='logout'),
     path('<str:username>/home/', user_views.user_home, name='user_home'),
     path('books/<str:category>/', user_views.book_cat_list, name='book_cat_list'),
+    path('books/view/<int:book_id>/', user_views.per_book, name="per_book"),
     #path('<int:question_id>/', views.details, name='detail'),
 
 ]

@@ -1,0 +1,36 @@
+{% extends "mainlib//base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="row container-fluid abc">
+    <h1> {{ book.book_title }} </h1>
+    <article class="container-fluid">
+    <div class="article-metadata">
+        <!-- <h2> <a class="mr-2 article-title" href="#"> Author: {{ book.book_author }}</a> </h2> -->
+        <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static book.book_img_url }} %}" width="180"/> </a>
+        <a class="mr-2 text-muted col-md-12 " href="#"> Author: {{ book.book_author }} </a>
+            <a class="mr-2 text-muted col-md-12 " href="#"> Category: {{ book.book_cat }} </a>
+            <br>
+        <small class="text-muted"> Date Published: {{ book.book_pubd }} </small>
+    </div>
+     <p class="article-content"> {{ book.book_desc }} </p>
+    </article>
+    <hr>
+
+
+
+    {% for review in reviews %}
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ review.user }}</a>
+              <small class="text-muted">{{ review.rev }}</small>
+            </div>
+            <h2><a class="article-title" href="#">{{ review.date_posted }}</a></h2>
+            <p class="article-content">{{ review.content }}</p> 
+          </div>
+        </article>
+    {% endfor %}
+</div>
+
+
+
+{% endblock content %}

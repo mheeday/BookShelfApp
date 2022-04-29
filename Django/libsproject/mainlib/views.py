@@ -1,40 +1,34 @@
-from django.shortcuts import render, redirect
+from multiprocessing import context
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
 from django.contrib import messages
 from . import forms
-from .models import Books, UserBooks
+from .models import Books, UserBook, BookReview
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponse
 import random
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-cate_options = {'Comic': 'CO',
-                'Fantasy': 'FA',
-                'Action': 'AC',
-                'Thriller': 'TH',
-                'Contemporary': 'CN',
-    }
+cate_options = ['Comic', 'Fantasy', 'Action', 'Thriller', 'Contemporary']
 
 def get_random_books(each_cat):
     cat_options = cate_options.copy()
     context = {'context_home':[]}
 
     for i in range(3):
-        key = random.choices(list(cat_options.keys()))[0]
-        value = cat_options[key]
+        key = random.choices(cat_options)[0]
         context['context_home'].append(key)
-        books_to_choose = Books.objects.filter(book_cat=value)
+        print(key)
+        books_to_choose = Books.objects.filter(book_cat=key)
         for j in range(each_cat):
             b = random.choice(books_to_choose)
             book_code = b.book_cover
             context['context_home'].append(b)
-            context['context_home'].append(f"mainlib/{book_code}.jpg")
             books_to_choose = books_to_choose.exclude(book_cover=book_code)
-        cat_options.pop(key)
+        cat_options.remove(key)
 
     return context
-
 
 def home(request):
     context = get_random_books(1)
@@ -45,15 +39,13 @@ def home(request):
 @login_required
 def user_home(request, username):
     if request.user.is_authenticated:
-        if UserBooks.objects.filter(user=request.user).exists():
+        if UserBook.objects.filter(user=request.user).exists():
             context = get_random_books(3)
             return render(request, 'mainlib/user_home.html', context)
         else:
             context = get_random_books(3)
             return render(request, 'mainlib/user_home.html', context)
-
             
-
         #get users last viewed three genre
         #get users last viewed books there
             return render(request, 'mainlib/user_home.html', context)
@@ -63,18 +55,22 @@ def user_home(request, username):
 
 def book_cat_list(request, category):
 
-    context = {'context_text':[]}
     category = category.capitalize()
-    cat_value = cate_options[category]
-
-    books = Books.objects.filter(book_cat=cat_value)
-
+    books = Books.objects.filter(book_cat=category)
+    context = {'context_text':[], 'category':category}
     for book in books:
         context['context_text'].append(book)
-        #img_link = f"mainlib/{book.book_cover}.jpg"
-        #context['context_text'].append(img_link)
-
+    print(context)
     return render(request, 'mainlib/book_cat_list.html', context)
+
+def per_book(request, book_id):
+    book = get_object_or_404(Books, pk=book_id)
+    context = {'book': book}
+
+    book_reviews = BookReview.objects.filter(book_id=book_id).order_by('-date_posted')
+    if book_reviews.exists():
+        context = {'book': book, 'reviews': book_reviews}
+    return render(request, 'mainlib/each_book.html', context)
 
 
 def register(request):
