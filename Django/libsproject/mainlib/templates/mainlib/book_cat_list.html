@@ -1,0 +1,43 @@
+{% extends "mainlib//base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="row container-fluid abc">
+    <!-- 
+  <div class="col-md-4 container-fluid">
+    <h1> {{ context_home.0 }} </h1>
+
+    <h1> {{ url_link}} </h1>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.2 %}" width="180"/> </a>
+  </div>
+
+  <div class="col-md-4 container-fluid">
+    <h1> {{ context_home.3 }} </h1>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.5 %}" width="180"/> </a>
+  </div>
+
+  <div class="col-md-4 container-fluid">
+    <h1> {{ context_home.6 }} </h1>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.8 %}" width="180"/> </a>
+  </div>
+  -->
+    
+    {% for book in context_text %}
+    <article class="container-fluid">
+    <div class="article-metadata">
+        <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.8 %}" width="180"/> </a>
+        <a class="mr-2" href="#">{{ book.book_title }}</a>
+        <small class="text-muted">{{ book.book_author }}</small>
+    </div>
+
+    <h2><a class="article-title" href="#">{{ book.book_pubd }}</a></h2>
+    <p class="article-content">{{ book.book_pubd }}</p> 
+    </article>
+
+    {% endfor %}
+
+
+</div>
+
+
+{% endblock content %}

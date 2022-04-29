@@ -3,24 +3,24 @@
 {% block content %}
 <div class="row container-fluid">
   <div class="col-md-4 container-fluid">
-    <h1> Action </h1>
-    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static 'mainlib/sample.jpg' %}" width="180"/> </a>
-    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static 'mainlib/sample.jpg' %}" width="180"/> </a>
-    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static 'mainlib/sample.jpg' %}" width="180"/> </a>
+    <h1> {{ context_home.0 }} </h1>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.2 %}" width="180"/> </a>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.4 %}" width="180"/> </a>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.6 %}" width="180"/> </a>
 
   </div>
   <div class="col-md-4 container-fluid">
-    <h1> Action </h1>
-    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static 'mainlib/sample.jpg' %}" width="180"/> </a>
-    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static 'mainlib/sample.jpg' %}" width="180"/> </a>
-    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static 'mainlib/sample.jpg' %}" width="180"/> </a>
-
+    <h1>  {{ context_home.7 }}  </h1>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.9 %}" width="180"/> </a>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.11 %}" width="180"/> </a>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.13 %}" width="180"/> </a>
   </div>
+  
   <div class="col-md-4 container-fluid">
-    <h1> Action </h1>
-    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static 'mainlib/sample.jpg' %}" width="180"/> </a>
-    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static 'mainlib/sample.jpg' %}" width="180"/> </a>
-    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static 'mainlib/sample.jpg' %}" width="180"/> </a>
+    <h1> {{ context_home.14 }} </h1>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.16 %}" width="180"/> </a>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.18 %}" width="180"/> </a>
+    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.20 %}" width="180"/> </a>
 
   </div>
 </div>
