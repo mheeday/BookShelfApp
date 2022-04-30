@@ -7,7 +7,8 @@ from . import views as user_views
 
 urlpatterns = [
 
-    path('home/', user_views.home, name='home'),
+    path('index/', user_views.home, name='home'),
+    path('', user_views.home, name='home'),
     path('register/', user_views.register, name='register'),
     path('login/', user_views.login, name='login'),
     path('logout/', user_views.logout, name='logout'),
@@ -16,6 +17,7 @@ urlpatterns = [
     path('<str:username>/home/', user_views.user_home, name='user_home'),
     path('books/<str:category>/', user_views.book_cat_list, name='book_cat_list'),
     path('books/view/<int:book_id>/', user_views.per_book, name="per_book"),
+    path('book/add/', user_views.add_book, name='add_book')
 
     #path('<int:question_id>/', views.details, name='detail'),
 

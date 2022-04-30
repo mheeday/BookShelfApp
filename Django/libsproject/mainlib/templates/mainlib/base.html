@@ -34,7 +34,8 @@
             <div class="navbar-nav">
               {% if request.user.is_authenticated %}
               <a class="nav-item nav-link" href="{% url 'all_user_books' %}"> My Books</a>
-              <a class="nav-item nav-link" href="{% url 'user_archive' %}"> Archive</a>
+              <a class="nav-item nav-link" href="{% url 'user_archive' %}"> Archived </a>
+              <a class="nav-item nav-link" href="{% url 'add_book' %}"> Add a Book </a>
               <a class="nav-item nav-link" href="{% url 'logout' %}"> Logout</a>
              
             {% else %}

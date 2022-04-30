@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
 from django.contrib import messages
-from .forms import CommentForm, UserRegistrationForm
+from .forms import CommentForm, UserRegistrationForm, BookForm
 from .models import Books, UserBook, BookReview
 from django.contrib.auth.forms import AuthenticationForm
 import random
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.core.files.storage import FileSystemStorage
+import uuid
 
 # Create your views here.
 cate_options = ['Comic', 'Fantasy', 'Action', 'Thriller', 'Contemporary']
@@ -182,3 +184,35 @@ def user_archive(request):
     else:
         context = {'empty': 'empty'}
     return render(request, "mainlib/user_archive.html", context)
+
+@login_required
+def add_book(request):
+    if request.method == 'POST' and request.FILES['image_file']:
+        print('YES ----', request.FILES['image_file'])
+        form = BookForm(request.POST, request.FILES)
+        print(request.FILES)
+        if form.is_valid():
+            book_title = form.cleaned_data.get('book_title')
+            book_author = form.cleaned_data.get('book_author')
+            book_cat = form.cleaned_data.get('book_cat')
+            book_desc = form.cleaned_data.get('book_desc')
+            book_pubd = form.cleaned_data.get('book_pubd')
+            book_cover = uuid.uuid4()
+            image = form.cleaned_data.get('image_file')
+
+            temp_book = Books(book_title = book_title, book_author = book_author, book_cat = book_cat, book_cover = book_cover, book_desc = book_desc, book_pubd = book_pubd)
+            temp_book.save()
+            
+            fss = FileSystemStorage()
+            files = fss.save(f"{book_cover}.jpg", image)
+            file_url = fss.url(files)
+
+            book = Books.objects.get(book_cover=book_cover)
+            return redirect('per_book', book_id=book.id)
+
+        else:
+            messages.info(request, "Invalid Details, please check!")
+
+    form = BookForm()
+    context = {'form':form}
+    return render(request, 'mainlib/add_book.html', context)
