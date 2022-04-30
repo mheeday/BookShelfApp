@@ -8,6 +8,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponse
 import random
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 # Create your views here.
 cate_options = ['Comic', 'Fantasy', 'Action', 'Thriller', 'Contemporary']
@@ -63,13 +64,69 @@ def book_cat_list(request, category):
     print(context)
     return render(request, 'mainlib/book_cat_list.html', context)
 
+
+@login_required
 def per_book(request, book_id):
     book = get_object_or_404(Books, pk=book_id)
     context = {'book': book}
 
+    try:
+        temp_var = UserBook.objects.get(book=book)
+        if temp_var.archived == True:
+            context['buttons'] = {'sub':'Remove from Personal', 'unarc':'Unarchive Book', }
+
+        else:
+            context['buttons'] = {'sub':'Remove from Personal', 'arc':'Archive Book', }
+    except:
+        context['buttons'] = {'add':'Add to Personal'}
+
+
+    new_review = None
+
+
+    if request.method == 'POST' and 'comment' in request.POST:
+        review_form = forms.CommentForm(data=request.POST)
+        if review_form.is_valid():
+            new_review = review_form.save(commit=False)
+            new_review.user = request.user
+            new_review.book = Books.objects.get(pk=book_id)
+            new_review.rev = review_form.cleaned_data.get('rev') 
+            new_review.date_posted = timezone.now()
+            new_review.save()
+            
+            return redirect('per_book', book_id)
+    
+    elif request.method == 'POST' and 'add' in request.POST:
+        temp_var = UserBook(user=request.user, book=book, last_viewed=timezone.now())
+        temp_var.save()
+        return redirect('per_book', book_id)
+
+    elif request.method == 'POST' and 'sub' in request.POST:
+        temp_var = UserBook.objects.get(book=book)
+        temp_var.delete()
+        return redirect('per_book', book_id)
+
+    elif request.method == 'POST' and 'arc' in request.POST:
+        temp_var = UserBook.objects.get(book=book)
+        temp_var.archived = True
+        temp_var.save()
+        return redirect('per_book', book_id)
+
+    elif request.method == 'POST' and 'unarc' in request.POST:
+        temp_var = UserBook.objects.get(book=book)
+        temp_var.archived = False
+        temp_var.save()
+        return redirect('per_book', book_id)
+
+    else:
+        review_form = forms.CommentForm()
+        context['form'] = review_form
+
     book_reviews = BookReview.objects.filter(book_id=book_id).order_by('-date_posted')
+
     if book_reviews.exists():
-        context = {'book': book, 'reviews': book_reviews}
+        context['reviews'] =  book_reviews
+    print(context)
     return render(request, 'mainlib/each_book.html', context)
 
 
@@ -114,3 +171,26 @@ def logout(request):
     auth_logout(request)
     return redirect('home')
 
+@login_required
+def all_user_books(request):
+    books = UserBook.objects.filter(user=request.user, archived=False)
+    if books.exists():
+        context = {'books': []}
+        for book in books:
+            context['books'].append(book.book)
+        print(book.book.id)
+    else:
+        context = {'empty': 'empty'}
+
+    return render(request, "mainlib/all_user_books.html", context)
+
+@login_required
+def user_archive(request):
+    books = UserBook.objects.filter(user=request.user, archived=True)
+    if books.exists():
+        context = {'books': []}
+        for book in books:
+            context['books'].append(book.book)
+    else:
+        context = {'empty': 'empty'}
+    return render(request, "mainlib/user_archive.html", context)

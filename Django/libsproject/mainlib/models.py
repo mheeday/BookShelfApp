@@ -34,7 +34,7 @@ class Books(models.Model):
 
 class UserBook(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.ForeignKey(Books, on_delete=models.CASCADE)
+    book = models.ForeignKey(Books, unique=True ,on_delete=models.CASCADE)
     last_viewed = models.DateTimeField()
     archived = models.BooleanField(default=False)
 

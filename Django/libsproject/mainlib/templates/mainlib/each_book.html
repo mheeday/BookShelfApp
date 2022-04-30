@@ -1,34 +1,64 @@
 {% extends "mainlib//base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
 
 <div class="row container-fluid abc">
-    <h1> {{ book.book_title }} </h1>
     <article class="container-fluid">
-    <div class="article-metadata">
-        <!-- <h2> <a class="mr-2 article-title" href="#"> Author: {{ book.book_author }}</a> </h2> -->
-        <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static book.book_img_url }} %}" width="180"/> </a>
-        <a class="mr-2 text-muted col-md-12 " href="#"> Author: {{ book.book_author }} </a>
-            <a class="mr-2 text-muted col-md-12 " href="#"> Category: {{ book.book_cat }} </a>
-            <br>
-        <small class="text-muted"> Date Published: {{ book.book_pubd }} </small>
-    </div>
-     <p class="article-content"> {{ book.book_desc }} </p>
+        <div class="article-metadata">
+             <h2> <a class="mr-2 article-title" href="{% url 'per_book' book.id %}"> <b> {{ book.book_title }} </b> </a> </h2> 
+            <a href="{% url 'per_book' book.id %}">  <img class="d-inline-block align-top img-fluid" src="{% static book.book_img_url }} %}" width="180"/> </a>
+            <a class="mr-2 text-muted col-md-12 " href="#"> <b> Author: </b> {{ book.book_author }} </a>
+                <a class="mr-2 text-muted col-md-12 " href="#"> <b> Category: </b> {{ book.book_cat }} </a>
+                <br>
+            <small class="text-muted"> <b> Date Published: </b> {{ book.book_pubd }} </small>
+        </div>
+        <p class="article-content"> <b> About the book: </b> {{ book.book_desc }} </p>
     </article>
     <hr>
 
+    <article class="row container-fluid abc"> 
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {% for key, value in buttons.items %}
+                    {% if key == 'sub' or key == 'arc' %}
+                    <button class="btn btn-danger btn-sm m-1" type="submit" name="{{ key }}"> {{ value }} </button>
+                    {% else %}
+                    <button class="btn btn-outline-info btn-sm m-1" type="submit" name="{{ key }}"> {{ value }} </button>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </form>
+    </article>
+
+
+
+
+    <article class="row container-fluid abc"> 
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4"> Leave a Comment </legend>
+            {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-info" type="submit" name="comment"> Submit </button>
+        </div>
+    </form>
+</article>
 
 
     {% for review in reviews %}
+    <article class="row container-fluid abc" style="margin-top: 2em;"> 
             <div class="article-metadata">
               <a class="mr-2" href="#">{{ review.user }}</a>
-              <small class="text-muted">{{ review.rev }}</small>
-            </div>
-            <h2><a class="article-title" href="#">{{ review.date_posted }}</a></h2>
-            <p class="article-content">{{ review.content }}</p> 
-          </div>
+              <p class="article-content">{{ review.rev }}</p>
+              <small class="text-muted">{{ review.date_posted }}</small>
+            </div>         
         </article>
     {% endfor %}
+
 </div>
 
 
