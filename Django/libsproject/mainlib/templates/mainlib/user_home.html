@@ -14,11 +14,11 @@
 
       {% for key, value in item.items %}
 
-        <div class="col-md-4 container-fluid">
+        <div class="container-fluid" style="padding: 1.5em;">
           <h1>  {{ key }}  </h1>
           {% for bk in value %}
-            <h5>  {{ bk.book.book_title }}  </h5>
-            <a href="{% url 'per_book' bk.book.id %}">  <img class="d-inline-block align-top img-fluid" src="{% static bk.book.book_img_url }} %}" width="180"/> </a>
+            <h5 >  {{ bk.book.book_title }}  </h5>
+            <a style="border: 2em; padding-bottom: 2em;" href="{% url 'per_book' bk.book.id %}" >  <img class="d-inline-block align-top img-fluid" src="{% static bk.book.book_img_url }} %}" width="180"/> </a>
           {% endfor %}
         </div>
       {% endfor %}

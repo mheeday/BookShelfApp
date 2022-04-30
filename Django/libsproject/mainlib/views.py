@@ -63,10 +63,20 @@ def book_cat_list(request, category):
         context['context_text'].append(book)
     return render(request, 'mainlib/book_cat_list.html', context)
 
+def update_date(user, book):
+    try:
+        temp_a = UserBook.objects.get(book=book, user=user)
+        temp_a.last_viewed = timezone.now()
+        temp_a.save()
+        return True
+    except:
+        return False
 
 @login_required
 def per_book(request, book_id):
+    
     book = get_object_or_404(Books, pk=book_id)
+
     context = {'book': book}
 
     try:
@@ -91,6 +101,11 @@ def per_book(request, book_id):
     elif request.method == 'POST' and 'add' in request.POST:
         temp_var = UserBook(user=request.user, book=book, last_viewed=timezone.now())
         temp_var.save()
+
+        temp_a = UserBook.objects.get(book=book)
+        temp_a.last_viewed = timezone.now()
+        temp_a.save()
+
         return redirect('per_book', book_id)
 
     elif request.method == 'POST' and 'sub' in request.POST:
@@ -102,12 +117,14 @@ def per_book(request, book_id):
         temp_var = UserBook.objects.get(book=book)
         temp_var.archived = True
         temp_var.save()
+        update_date(request.user, book)
         return redirect('per_book', book_id)
 
     elif request.method == 'POST' and 'unarc' in request.POST:
         temp_var = UserBook.objects.get(book=book)
         temp_var.archived = False
         temp_var.save()
+        update_date(request.user, book)
         return redirect('per_book', book_id)
 
     else:
@@ -204,8 +221,7 @@ def add_book(request):
             temp_book.save()
             
             fss = FileSystemStorage()
-            files = fss.save(f"{book_cover}.jpg", image)
-            file_url = fss.url(files)
+            fss.save(f"{book_cover}.jpg", image)
 
             book = Books.objects.get(book_cover=book_cover)
             return redirect('per_book', book_id=book.id)

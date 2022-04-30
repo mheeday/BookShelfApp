@@ -9,11 +9,11 @@
         <h3> When you archive books, they appear here </h3>
     {% else %}
         {% for book in books %}
-            <article class="container-fluid">
+            <article class="container-fluid" style="border: 2em; padding-bottom: 2em;">
                 <div class="article-metadata">
-                    <h2> <a class="mr-2 article-title" href="#">{{ book.book_title }}</a> </h2>
-                    <a href="{% url 'home' %}">  <img class="d-inline-block align-top img-fluid" src="{% static book.book_img_url }} %}" width="180"/> </a>
-                    <a class="mr-2 text-muted" href="#">{{ book.book_author }}</a>
+                    <h2> <a class="mr-2 article-title" href="{% url 'per_book' book.id %}">{{ book.book_title }}</a> </h2>
+                    <a href="{% url 'per_book' book.id %}">  <img class="d-inline-block align-top img-fluid" src="{% static book.book_img_url }} %}" width="180"/> </a>
+                    <a class="mr-2 text-muted">{{ book.book_author }}</a>
                     <small class="text-muted">{{ book.book_pubd }}</small>
                 </div>
                 <!-- <p class="article-content">{{ book.book_pubd }}</p>  -->
