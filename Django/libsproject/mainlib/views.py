@@ -1,11 +1,9 @@
-from multiprocessing import context
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login, authenticate, logout as auth_logout
 from django.contrib import messages
-from . import forms
+from .forms import CommentForm, UserRegistrationForm
 from .models import Books, UserBook, BookReview
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.http import HttpResponse
+from django.contrib.auth.forms import AuthenticationForm
 import random
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -28,7 +26,6 @@ def get_random_books(each_cat):
             context['context_home'].append(b)
             books_to_choose = books_to_choose.exclude(book_cover=book_code)
         cat_options.remove(key)
-
     return context
 
 def home(request):
@@ -42,13 +39,11 @@ def user_home(request, username):
     if request.user.is_authenticated:
         userbooks = UserBook.objects.filter(user=request.user).order_by('-last_viewed')
         if userbooks.exists():
-            print("Initial -------- ", userbooks)
             context = {'item':{}}
             for i in cate_options:
                 cat_books = userbooks.filter(book__book_cat=i)
                 if cat_books.exists():
                     context['item'][i] = list(cat_books)
-            print("Final ------ ", context)
             return render(request, 'mainlib/user_home.html', context)
         else:
             context = {'item': 0}
@@ -59,13 +54,11 @@ def user_home(request, username):
         return redirect('login')
 
 def book_cat_list(request, category):
-
     category = category.capitalize()
     books = Books.objects.filter(book_cat=category)
     context = {'context_text':[], 'category':category}
     for book in books:
         context['context_text'].append(book)
-    print(context)
     return render(request, 'mainlib/book_cat_list.html', context)
 
 
@@ -84,20 +77,13 @@ def per_book(request, book_id):
     except:
         context['buttons'] = {'add':'Add to Personal'}
 
-
     new_review = None
 
-
     if request.method == 'POST' and 'comment' in request.POST:
-        review_form = forms.CommentForm(data=request.POST)
+        review_form = CommentForm(data=request.POST)
         if review_form.is_valid():
-            new_review = review_form.save(commit=False)
-            new_review.user = request.user
-            new_review.book = Books.objects.get(pk=book_id)
-            new_review.rev = review_form.cleaned_data.get('rev') 
-            new_review.date_posted = timezone.now()
-            new_review.save()
-            
+            new_review = BookReview(user=request.user, book=Books.objects.get(pk=book_id), rev=review_form.cleaned_data.get('rev'), date_posted = timezone.now())
+            new_review.save()         
             return redirect('per_book', book_id)
     
     elif request.method == 'POST' and 'add' in request.POST:
@@ -123,7 +109,7 @@ def per_book(request, book_id):
         return redirect('per_book', book_id)
 
     else:
-        review_form = forms.CommentForm()
+        review_form = CommentForm()
         context['form'] = review_form
 
     book_reviews = BookReview.objects.filter(book_id=book_id).order_by('-date_posted')
@@ -136,16 +122,14 @@ def per_book(request, book_id):
 
 def register(request):
     if request.method == 'POST':
-        form = forms.UserRegistrationForm(request.POST)
+        form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            #forms.UserRegistrationForm.cleaned_data['username']
             form.save()
-            
             messages.success(request, f"Welcome {form.cleaned_data['first_name']}!, account created successfully.")
             return redirect('login')
 
     else:
-        form = forms.UserRegistrationForm()
+        form = UserRegistrationForm()
 
     context = {'form':form}
     return render(request, 'mainlib/register.html', context)
