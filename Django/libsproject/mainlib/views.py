@@ -40,16 +40,20 @@ def home(request):
 @login_required
 def user_home(request, username):
     if request.user.is_authenticated:
-        if UserBook.objects.filter(user=request.user).exists():
-            context = get_random_books(3)
+        userbooks = UserBook.objects.filter(user=request.user).order_by('-last_viewed')
+        if userbooks.exists():
+            print("Initial -------- ", userbooks)
+            context = {'item':{}}
+            for i in cate_options:
+                cat_books = userbooks.filter(book__book_cat=i)
+                if cat_books.exists():
+                    context['item'][i] = list(cat_books)
+            print("Final ------ ", context)
             return render(request, 'mainlib/user_home.html', context)
         else:
-            context = get_random_books(3)
+            context = {'item': 0}
             return render(request, 'mainlib/user_home.html', context)
-            
-        #get users last viewed three genre
-        #get users last viewed books there
-            return render(request, 'mainlib/user_home.html', context)
+
     else:
         messages.info(request, f"Please, Login.")
         return redirect('login')
