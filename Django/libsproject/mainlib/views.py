@@ -20,7 +20,6 @@ def get_random_books(each_cat):
     for i in range(3):
         key = random.choices(cat_options)[0]
         context['context_home'].append(key)
-        print(key)
         books_to_choose = Books.objects.filter(book_cat=key)
         for j in range(each_cat):
             b = random.choice(books_to_choose)
@@ -135,7 +134,6 @@ def per_book(request, book_id):
 
     if book_reviews.exists():
         context['reviews'] =  book_reviews
-    print(context)
     return render(request, 'mainlib/each_book.html', context)
 
 
@@ -163,7 +161,6 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 messages.info(request, f"Welcome back, {username}.")
-                print(f" Current User ||||||||| {request.user.email}")
                 return redirect('user_home', username)
             else:
                 messages.warning(request, "Invalid Username or Password!")
@@ -185,7 +182,6 @@ def all_user_books(request):
         context = {'books': []}
         for book in books:
             context['books'].append(book.book)
-        print(book.book.id)
     else:
         context = {'empty': 'empty'}
 
@@ -207,7 +203,6 @@ def add_book(request):
     if request.method == 'POST' and request.FILES['image_file']:
         print('YES ----', request.FILES['image_file'])
         form = BookForm(request.POST, request.FILES)
-        print(request.FILES)
         if form.is_valid():
             book_title = form.cleaned_data.get('book_title')
             book_author = form.cleaned_data.get('book_author')
@@ -221,7 +216,7 @@ def add_book(request):
             temp_book.save()
             
             fss = FileSystemStorage()
-            fss.save(f"{book_cover}.jpg", image)
+            files = fss.save(f"{book_cover}.jpg", image)
 
             book = Books.objects.get(book_cover=book_cover)
             return redirect('per_book', book_id=book.id)
