@@ -4,25 +4,16 @@
 
 <div class="row container-fluid">
 
-  <h1> Welcome to Reader's Coven </h1>
+  <h1  class="col-md-12 container-fluid" > Welcome to Reader's Coven </h1>
   
-  <div class="col-md-4 container-fluid">
-    <h3> {{ context_home.0 }} </h3>
+  {% for key, value in context_home.items %}
 
-    <a href="{% url 'per_book' context_home.1.id %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.1.book_img_url %}" width="180"/> </a>
+  <div class="col-md-6 container-fluid" style="border: 2em; padding-bottom: 2em">
+    <h3> {{ key }} </h3>
+    <a href="{% url 'per_book' value.id %}">  <img class="d-inline-block align-top img-fluid" src="{{ value.book_img_url }}" width="180"/> </a>
   </div>
 
-  <div class="col-md-4 container-fluid">
-    <h3> {{ context_home.2 }} </h3>
-    <a href="{% url 'per_book' context_home.3.id %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.3.book_img_url %}" width="180"/> </a>
-  </div>
-
-  <div class="col-md-4 container-fluid">
-    <h3> {{ context_home.4 }} </h3>
-    <a href="{% url 'per_book' context_home.5.id %}">  <img class="d-inline-block align-top img-fluid" src="{% static context_home.5.book_img_url %}" width="180"/> </a>
-  </div>
-
-
+  {% endfor %}
 </div>
 
 {% endblock content %}

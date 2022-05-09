@@ -9,30 +9,21 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.core.files.storage import FileSystemStorage
 import uuid
+from django.conf import settings
 
 # Create your views here.
-cate_options = ['Comic', 'Fantasy', 'Action', 'Thriller', 'Contemporary']
-
-def get_random_books(each_cat):
-    cat_options = cate_options.copy()
-    context = {'context_home':[]}
-
-    for i in range(3):
-        key = random.choices(cat_options)[0]
-        context['context_home'].append(key)
-        books_to_choose = Books.objects.filter(book_cat=key)
-        for j in range(each_cat):
-            b = random.choice(books_to_choose)
-            book_code = b.book_cover
-            context['context_home'].append(b)
-            books_to_choose = books_to_choose.exclude(book_cover=book_code)
-        cat_options.remove(key)
-    return context
-
 def home(request):
-    context = get_random_books(1)
     if request.user.is_authenticated:
         return redirect('user_home', username=request.user.username)
+    
+    context = {'context_home':{}}
+    books = Books.objects.all()
+    for cat_tuple in Books.BOOK_CATEGORIES:
+        cat = cat_tuple[0]
+        b_choice = random.choice(books.filter(book_cat=cat))
+        print(cat, b_choice)
+        context['context_home'][cat] = b_choice
+    print(context)
     return render(request, 'mainlib/home.html', context)
 
 @login_required
@@ -41,7 +32,8 @@ def user_home(request, username):
         userbooks = UserBook.objects.filter(user=request.user).order_by('-last_viewed')
         if userbooks.exists():
             context = {'item':{}}
-            for i in cate_options:
+            for cat_tuple in Books.BOOK_CATEGORIES:
+                i = cat_tuple[0]
                 cat_books = userbooks.filter(book__book_cat=i)
                 if cat_books.exists():
                     context['item'][i] = list(cat_books)
@@ -161,7 +153,10 @@ def login(request):
             if user is not None:
                 auth_login(request, user)
                 messages.info(request, f"Welcome back, {username}.")
-                return redirect('user_home', username)
+                if request.GET.get('next'):
+                    return redirect(request.GET.get('next'))
+                else:
+                    return redirect('home')
             else:
                 messages.warning(request, "Invalid Username or Password!")
         else:
@@ -212,11 +207,8 @@ def add_book(request):
             book_cover = uuid.uuid4()
             image = form.cleaned_data.get('image_file')
 
-            temp_book = Books(book_title = book_title, book_author = book_author, book_cat = book_cat, book_cover = book_cover, book_desc = book_desc, book_pubd = book_pubd)
+            temp_book = Books(book_title = book_title, book_author = book_author, book_cat = book_cat, book_cover = book_cover, book_desc = book_desc, book_pubd = book_pubd, book_image=image)
             temp_book.save()
-            
-            fss = FileSystemStorage()
-            files = fss.save(f"{book_cover}.jpg", image)
 
             book = Books.objects.get(book_cover=book_cover)
             return redirect('per_book', book_id=book.id)

@@ -1,5 +1,6 @@
 {% extends "mainlib//base.html" %}
 {% load static %}
+
 {% load crispy_forms_tags %}
 {% block content %}
 
@@ -7,9 +8,9 @@
     <article class="container-fluid">
         <div class="article-metadata">
              <h2> <a class="mr-2 article-title" href="{% url 'per_book' book.id %}"> <b> {{ book.book_title }} </b> </a> </h2> 
-            <a href="{% url 'per_book' book.id %}">  <img class="d-inline-block align-top img-fluid" src="{% static book.book_img_url }} %}" width="180"/> </a>
-            <a class="mr-2 text-muted col-md-12 " href="#"> <b> Author: </b> {{ book.book_author }} </a>
-                <a class="mr-2 text-muted col-md-12 " href="#"> <b> Category: </b> {{ book.book_cat }} </a>
+            <a href="{% url 'per_book' book.id %}">  <img class="d-inline-block align-top img-fluid" src="{{ book.book_img_url }}" width="180"/> </a>
+            <a class="mr-2 text-muted col-md-12 "> <b> Author: </b> {{ book.book_author }} </a>
+                <a class="mr-2 text-muted col-md-12 "> <b> Category: </b> {{ book.book_cat }} </a>
                 <br>
             <small class="text-muted"> <b> Date Published: </b> {{ book.book_pubd }} </small>
         </div>
@@ -52,7 +53,7 @@
     {% for review in reviews %}
     <article class="row container-fluid abc" style="margin-top: 2em;"> 
             <div class="article-metadata">
-              <a class="mr-2" href="#">{{ review.user }}</a>
+              <a class="mr-2">{{ review.user }}</a>
               <p class="article-content">{{ review.rev }}</p>
               <small class="text-muted">{{ review.date_posted }}</small>
             </div>         

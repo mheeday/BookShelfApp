@@ -1,6 +1,3 @@
-from ast import ImportFrom
-from dataclasses import field, fields
-from pyexpat import model
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -15,7 +12,7 @@ class UserRegistrationForm(UserCreationForm):
         fields = ['first_name', 'username', 'email', 'password1', 'password2']
 
 class CommentForm(forms.ModelForm):
-    class Meta:
+    class Meta: 
         model = BookReview
         fields = ('rev',)
 
